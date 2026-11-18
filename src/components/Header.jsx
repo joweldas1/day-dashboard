@@ -1,15 +1,16 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
-  Sun,
-  Moon,
+  Palette,
   Maximize,
   Minimize,
   PictureInPicture,
   Calendar,
   Settings,
   Edit3,
-  HelpCircle
+  HelpCircle,
+  Check
 } from 'lucide-react';
+import { THEME_LIST, THEMES } from '../data/themes.js';
 
 export default function Header({
   currentTime,
@@ -19,13 +20,29 @@ export default function Header({
   theme,
   isFullscreen,
   isMiniMode,
-  onToggleTheme,
+  onChangeTheme,
   onToggleFullscreen,
   onToggleMiniMode,
   onOpenEdit,
   onOpenSettings,
   onOpenHelp
 }) {
+  const [themeMenuOpen, setThemeMenuOpen] = useState(false);
+  const themeMenuRef = useRef(null);
+
+  // Close theme menu if clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (themeMenuRef.current && !themeMenuRef.current.contains(e.target)) {
+        setThemeMenuOpen(false);
+      }
+    };
+    if (themeMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [themeMenuOpen]);
+
   // Format live clock HH:MM:SS or h:mm:ss AM/PM
   const hours = currentTime.getHours();
   const minutes = currentTime.getMinutes();
@@ -59,6 +76,8 @@ export default function Header({
     bengaliDate = englishDate;
   }
 
+  const currentThemeObj = THEMES[theme] || THEMES['black-green'];
+
   return (
     <header className="dashboard-header">
       <div className="clock-date-group">
@@ -77,19 +96,59 @@ export default function Header({
           className="header-btn"
           title={`Profile: ${activeProfile.name} (${profileOverride === 'auto' ? 'Auto-detected' : 'Manual override'})`}
         >
-          <Calendar size={16} />
+          <Calendar size={15} />
           <span>{activeProfile.name}</span>
         </div>
 
-        {/* Theme toggle */}
-        <button
-          className="header-btn"
-          onClick={onToggleTheme}
-          title="Toggle Theme (T)"
-          aria-label="Toggle Theme"
-        >
-          {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
-        </button>
+        {/* Theme Selector Pill & Popover Menu */}
+        <div style={{ position: 'relative' }} ref={themeMenuRef}>
+          <button
+            className="theme-select-btn"
+            onClick={() => setThemeMenuOpen((prev) => !prev)}
+            title="Switch Theme Combo (T)"
+            aria-label="Theme Selector"
+          >
+            <span
+              className="theme-color-dot"
+              style={{ backgroundColor: currentThemeObj.accentColor, color: currentThemeObj.accentColor }}
+            />
+            <span>{currentThemeObj.name}</span>
+            <Palette size={14} style={{ opacity: 0.7 }} />
+          </button>
+
+          {themeMenuOpen && (
+            <div className="theme-menu-popup" role="menu">
+              <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', padding: '0.2rem 0.5rem', letterSpacing: '0.05em' }}>
+                Black Combo Themes
+              </div>
+              {THEME_LIST.map((th) => (
+                <button
+                  key={th.id}
+                  className={`theme-menu-item ${theme === th.id ? 'active' : ''}`}
+                  onClick={() => {
+                    onChangeTheme(th.id);
+                    setThemeMenuOpen(false);
+                  }}
+                  role="menuitem"
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem' }}>
+                    <span
+                      style={{
+                        width: '12px',
+                        height: '12px',
+                        borderRadius: '50%',
+                        backgroundColor: th.accentColor,
+                        boxShadow: `0 0 8px ${th.accentColor}`
+                      }}
+                    />
+                    <span>{th.name}</span>
+                  </div>
+                  {theme === th.id && <Check size={14} />}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Mini Mode */}
         <button
@@ -98,7 +157,7 @@ export default function Header({
           title="Toggle Mini / Picture-in-Picture (M)"
           aria-label="Toggle Mini Mode"
         >
-          <PictureInPicture size={17} />
+          <PictureInPicture size={16} />
           <span>Mini</span>
         </button>
 
@@ -109,7 +168,7 @@ export default function Header({
           title="Toggle Fullscreen (F)"
           aria-label="Toggle Fullscreen"
         >
-          {isFullscreen ? <Minimize size={17} /> : <Maximize size={17} />}
+          {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
         </button>
 
         {/* Edit Schedule */}
@@ -119,7 +178,7 @@ export default function Header({
           title="Edit Schedule (E)"
           aria-label="Edit Schedule"
         >
-          <Edit3 size={17} />
+          <Edit3 size={15} />
           <span>Edit</span>
         </button>
 
@@ -130,7 +189,7 @@ export default function Header({
           title="Settings"
           aria-label="Settings"
         >
-          <Settings size={17} />
+          <Settings size={16} />
         </button>
 
         {/* Help */}
@@ -140,7 +199,7 @@ export default function Header({
           title="Keyboard Shortcuts & Help (?)"
           aria-label="Help"
         >
-          <HelpCircle size={17} />
+          <HelpCircle size={16} />
         </button>
       </div>
     </header>

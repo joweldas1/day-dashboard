@@ -1,6 +1,7 @@
 import React from 'react';
-import { X, Volume2, Bell, Sun, Moon, Clock, Monitor, Sliders } from 'lucide-react';
+import { X, Volume2, Bell, Sun, Moon, Clock, Monitor, Sliders, Palette } from 'lucide-react';
 import { requestNotificationPermission } from '../lib/notifications.js';
+import { THEME_LIST } from '../data/themes.js';
 
 export default function SettingsModal({
   isOpen,
@@ -37,34 +38,61 @@ export default function SettingsModal({
         </div>
 
         <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          {/* Theme */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <div style={{ fontWeight: 600 }}>Theme Mode</div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                Dark theme recommended for always-on display
+          {/* Theme Combinations */}
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+              <div>
+                <div style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <Palette size={16} /> Color Theme Combo
+                </div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                  Pure OLED Black paired with vibrant neon accents
+                </div>
               </div>
             </div>
-            <div style={{ display: 'flex', gap: '0.4rem' }}>
-              <button
-                className={`header-btn ${settings.theme === 'dark' ? 'active' : ''}`}
-                onClick={() => onUpdateSettings({ ...settings, theme: 'dark' })}
-              >
-                <Moon size={15} /> Dark
-              </button>
-              <button
-                className={`header-btn ${settings.theme === 'light' ? 'active' : ''}`}
-                onClick={() => onUpdateSettings({ ...settings, theme: 'light' })}
-              >
-                <Sun size={15} /> Light
-              </button>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '0.6rem' }}>
+              {THEME_LIST.map((th) => (
+                <button
+                  key={th.id}
+                  onClick={() => onUpdateSettings({ ...settings, theme: th.id })}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.6rem',
+                    padding: '0.6rem 0.85rem',
+                    borderRadius: 'var(--radius-md)',
+                    background: settings.theme === th.id ? 'var(--accent-glow)' : 'var(--bg-primary)',
+                    border: settings.theme === th.id ? `1.5px solid ${th.accentColor}` : '1px solid var(--border-subtle)',
+                    color: settings.theme === th.id ? '#ffffff' : 'var(--text-secondary)',
+                    cursor: 'pointer',
+                    fontWeight: 600,
+                    fontSize: '0.82rem',
+                    textAlign: 'left'
+                  }}
+                >
+                  <span
+                    style={{
+                      width: '12px',
+                      height: '12px',
+                      borderRadius: '50%',
+                      backgroundColor: th.accentColor,
+                      boxShadow: `0 0 8px ${th.accentColor}`,
+                      flexShrink: 0
+                    }}
+                  />
+                  <span>{th.name}</span>
+                </button>
+              ))}
             </div>
           </div>
 
           {/* Clock format */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <div style={{ fontWeight: 600 }}>Clock Display Format</div>
+              <div style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <Clock size={16} /> Clock Display Format
+              </div>
               <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
                 Choose between 24-hour (14:30) or 12-hour (2:30 PM)
               </div>

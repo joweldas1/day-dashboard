@@ -14,6 +14,7 @@ import {
   getSimulatedTime
 } from './lib/time.js';
 import { getCategory } from './data/categories.js';
+import { THEMES, THEME_LIST } from './data/themes.js';
 import {
   loadSchedules,
   saveSchedules,
@@ -92,19 +93,6 @@ export default function App() {
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
 
-  // Theme synchronization with HTML class
-  useEffect(() => {
-    const root = document.documentElement;
-    if (settings.theme === 'light') {
-      root.classList.remove('dark');
-      root.classList.add('light');
-    } else {
-      root.classList.remove('light');
-      root.classList.add('dark');
-    }
-    saveSettings(settings);
-  }, [settings]);
-
   // Wake Lock management
   useEffect(() => {
     if (settings.wakeLockEnabled) {
@@ -156,17 +144,48 @@ export default function App() {
     return getCategory(currentBlock?.category);
   }, [currentBlock]);
 
-  // Inject category CSS variables into root for smooth ambient gradient and contrast
+  // Synchronize Active Theme Combinations & CSS Variables
   useEffect(() => {
-    if (!activeCategory) return;
     const root = document.documentElement;
-    root.style.setProperty('--cat-color', activeCategory.color);
-    root.style.setProperty('--cat-accent', activeCategory.colorAccent);
-    root.style.setProperty('--cat-gradient', settings.theme === 'light' ? activeCategory.gradientLight : activeCategory.gradientDark);
-    root.style.setProperty('--cat-border', activeCategory.border);
-    root.style.setProperty('--cat-badge-bg', activeCategory.badgeBg);
-    root.style.setProperty('--cat-badge-text', settings.theme === 'light' ? activeCategory.badgeTextLight : activeCategory.badgeText);
-  }, [activeCategory, settings.theme]);
+    const currentTheme = THEMES[settings.theme] || THEMES['black-green'];
+
+    if (settings.theme === 'light') {
+      root.classList.remove('dark');
+      root.classList.add('light');
+    } else {
+      root.classList.remove('light');
+      root.classList.add('dark');
+    }
+
+    root.style.setProperty('--bg-primary', currentTheme.bgPrimary);
+    root.style.setProperty('--bg-surface', currentTheme.bgSurface);
+    root.style.setProperty('--bg-surface-elevated', currentTheme.bgElevated);
+    root.style.setProperty('--accent-primary', currentTheme.accentColor);
+    root.style.setProperty('--accent-hover', currentTheme.accentHover);
+    root.style.setProperty('--accent-glow', currentTheme.accentGlow);
+    root.style.setProperty('--border-subtle', currentTheme.borderSubtle);
+    root.style.setProperty('--border-strong', currentTheme.borderStrong);
+
+    if (settings.theme === 'dynamic') {
+      if (activeCategory) {
+        root.style.setProperty('--cat-color', activeCategory.color);
+        root.style.setProperty('--cat-accent', activeCategory.colorAccent);
+        root.style.setProperty('--cat-gradient', activeCategory.gradientDark);
+        root.style.setProperty('--cat-border', activeCategory.border);
+        root.style.setProperty('--cat-badge-bg', activeCategory.badgeBg);
+        root.style.setProperty('--cat-badge-text', activeCategory.badgeText);
+      }
+    } else {
+      root.style.setProperty('--cat-color', currentTheme.accentColor);
+      root.style.setProperty('--cat-accent', currentTheme.accentHover);
+      root.style.setProperty('--cat-gradient', currentTheme.heroGradient);
+      root.style.setProperty('--cat-border', currentTheme.borderStrong);
+      root.style.setProperty('--cat-badge-bg', currentTheme.badgeBg);
+      root.style.setProperty('--cat-badge-text', currentTheme.badgeText);
+    }
+
+    saveSettings(settings);
+  }, [settings, activeCategory]);
 
   // Block Transition Effect: Audio chime and desktop notification
   useEffect(() => {
@@ -193,10 +212,19 @@ export default function App() {
   }, [currentBlock?.title, formattedCountdown]);
 
   // Handlers for toggles
-  const handleToggleTheme = () => {
+  const handleCycleTheme = () => {
+    const idx = THEME_LIST.findIndex((t) => t.id === settings.theme);
+    const nextIdx = (idx + 1) % THEME_LIST.length;
     setSettings((prev) => ({
       ...prev,
-      theme: prev.theme === 'dark' ? 'light' : 'dark'
+      theme: THEME_LIST[nextIdx].id
+    }));
+  };
+
+  const handleChangeTheme = (newThemeId) => {
+    setSettings((prev) => ({
+      ...prev,
+      theme: newThemeId
     }));
   };
 
@@ -253,7 +281,7 @@ export default function App() {
         handleToggleMiniMode();
       } else if (key === 'T') {
         e.preventDefault();
-        handleToggleTheme();
+        handleCycleTheme();
       } else if (key === 'E') {
         e.preventDefault();
         setIsEditOpen((prev) => !prev);
@@ -265,7 +293,7 @@ export default function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isMiniMode]);
+  }, [isMiniMode, settings.theme]);
 
   // Schedule Save / Reset / Export / Import
   const handleSaveSchedule = (newItems) => {
@@ -309,7 +337,7 @@ export default function App() {
         theme={settings.theme}
         isFullscreen={isFullscreen}
         isMiniMode={isMiniMode}
-        onToggleTheme={handleToggleTheme}
+        onChangeTheme={handleChangeTheme}
         onToggleFullscreen={handleToggleFullscreen}
         onToggleMiniMode={handleToggleMiniMode}
         onOpenEdit={() => setIsEditOpen(true)}

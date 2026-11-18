@@ -7,7 +7,7 @@ const STORAGE_KEYS = {
 };
 
 export const DEFAULT_SETTINGS = {
-  theme: 'dark', // 'dark' | 'light'
+  theme: 'black-green', // 'black-green' (default) | 'black-cyan' | 'black-purple' | 'black-amber' | 'black-rose' | 'black-mono' | 'dynamic' | 'light'
   is24Hour: true,
   soundEnabled: false,
   notificationsEnabled: false,
@@ -55,7 +55,9 @@ export function loadSettings() {
   try {
     const saved = localStorage.getItem(STORAGE_KEYS.SETTINGS);
     if (saved) {
-      return { ...DEFAULT_SETTINGS, ...JSON.parse(saved) };
+      const parsed = JSON.parse(saved);
+      if (parsed.theme === 'dark') parsed.theme = 'black-green';
+      return { ...DEFAULT_SETTINGS, ...parsed };
     }
   } catch (e) {
     console.error('Failed to load settings', e);
