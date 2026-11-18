@@ -1,11 +1,11 @@
 :root {
-  /* Default Theme: Pure OLED Black & Neon Matrix Green */
+  /* Default Theme: Pure OLED Black & Solid Matrix Green Accent */
   --bg-primary: #000000;
-  --bg-surface: #080808;
-  --bg-surface-elevated: #111111;
-  --bg-surface-hover: #1a1a1a;
-  --border-subtle: rgba(16, 185, 129, 0.16);
-  --border-strong: rgba(16, 185, 129, 0.4);
+  --bg-surface: #0a0a0a;
+  --bg-surface-elevated: #141414;
+  --bg-surface-hover: #1c1c1c;
+  --border-subtle: #222222;
+  --border-strong: #333333;
 
   --text-primary: #ffffff;
   --text-secondary: #a1a1aa;
@@ -14,7 +14,7 @@
 
   --accent-primary: #10b981;
   --accent-hover: #34d399;
-  --accent-glow: rgba(16, 185, 129, 0.35);
+  --accent-glow: transparent; /* No fuzzy glow */
 
   /* Status Colors */
   --success: #10b981;
@@ -24,30 +24,28 @@
   /* Category Accents (Default fallback) */
   --cat-color: #10b981;
   --cat-accent: #34d399;
-  --cat-border: rgba(16, 185, 129, 0.4);
-  --cat-gradient: radial-gradient(circle at 15% 15%, rgba(16, 185, 129, 0.22) 0%, rgba(0, 0, 0, 0.98) 75%);
-  --cat-badge-bg: rgba(16, 185, 129, 0.12);
+  --cat-border: #10b981;
+  --cat-gradient: #0a0a0a; /* Solid dark surface */
+  --cat-badge-bg: rgba(16, 185, 129, 0.1);
   --cat-badge-text: #34d399;
 
   /* Sizing & Radii */
   --radius-sm: 6px;
   --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 22px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
   --radius-full: 9999px;
 
   /* Animation Timings */
-  --transition-color: background 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                      border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                      color 0.25s ease;
+  --transition-color: background 0.3s ease, border-color 0.3s ease, color 0.2s ease;
   --transition-fast: 0.15s ease;
   --transition-smooth: 0.25s ease;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.6);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.8);
-  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.9);
-  --shadow-glow: 0 0 45px -10px var(--accent-glow);
+  /* Shadows (Clean & crisp, zero blurry fuzzy glow) */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.7);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.85);
+  --shadow-glow: none;
 }
 
 /* Light Theme */
@@ -56,8 +54,8 @@
   --bg-surface: #ffffff;
   --bg-surface-elevated: #f1f5f9;
   --bg-surface-hover: #e2e8f0;
-  --border-subtle: rgba(0, 0, 0, 0.08);
-  --border-strong: rgba(0, 0, 0, 0.18);
+  --border-subtle: #e2e8f0;
+  --border-strong: #cbd5e1;
 
   --text-primary: #0f172a;
   --text-secondary: #475569;
@@ -66,13 +64,13 @@
 
   --accent-primary: #059669;
   --accent-hover: #10b981;
-  --accent-glow: rgba(5, 150, 105, 0.2);
+  --accent-glow: transparent;
 
   --cat-badge-text: #047857;
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.12);
-  --shadow-glow: 0 0 30px -5px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-glow: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
