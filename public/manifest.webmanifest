@@ -1,0 +1,18 @@
+{
+  "name": "Day Dashboard • Always-On Schedule Monitor",
+  "short_name": "DayDash",
+  "description": "Always-on Day Dashboard schedule monitor with live clock, current hero block, and timeline.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "landscape-primary",
+  "background_color": "#0a0e17",
+  "theme_color": "#0a0e17",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
